@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3307
--- Generation Time: Nov 25, 2025 at 04:55 PM
+-- Generation Time: Dec 06, 2025 at 10:10 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.1.25
 
@@ -20,6 +20,34 @@ SET time_zone = "+00:00";
 --
 -- Database: `pawpal_db`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tbl_pets`
+--
+
+CREATE TABLE `tbl_pets` (
+  `pet_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `pet_name` varchar(100) NOT NULL,
+  `pet_type` varchar(50) NOT NULL,
+  `category` varchar(50) NOT NULL,
+  `description` text NOT NULL,
+  `image_paths` text NOT NULL,
+  `lat` varchar(50) NOT NULL,
+  `lng` varchar(50) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `tbl_pets`
+--
+
+INSERT INTO `tbl_pets` (`pet_id`, `user_id`, `pet_name`, `pet_type`, `category`, `description`, `image_paths`, `lat`, `lng`, `created_at`) VALUES
+(26, 3, 'KOKO', 'Cat', 'Adoption', 'Have yellow eyes and cute face', '[\"assets/pets/pet_26_0.png\",\"assets/pets/pet_26_1.png\",\"assets/pets/pet_26_2.png\"]', '37.4219983', '-122.084', '2025-12-06 08:32:55'),
+(27, 3, 'PUPPY', 'Dog', 'Help/Rescue', 'PUPPY is missing, with dark brown color, last seen at behind home', '[\"assets/pets/pet_27_0.png\"]', '37.4219983', '-122.084', '2025-12-06 08:46:43'),
+(28, 3, 'LILY', 'Rabbit', 'Donation Request', 'LILY need some fund to their operation', '[\"assets/pets/pet_28_0.png\"]', '37.4219983', '-122.084', '2025-12-06 08:47:22');
 
 -- --------------------------------------------------------
 
@@ -51,6 +79,12 @@ INSERT INTO `tbl_users` (`user_id`, `email`, `name`, `password`, `phone`, `reg_d
 --
 
 --
+-- Indexes for table `tbl_pets`
+--
+ALTER TABLE `tbl_pets`
+  ADD UNIQUE KEY `pet_id` (`pet_id`);
+
+--
 -- Indexes for table `tbl_users`
 --
 ALTER TABLE `tbl_users`
@@ -60,6 +94,12 @@ ALTER TABLE `tbl_users`
 --
 -- AUTO_INCREMENT for dumped tables
 --
+
+--
+-- AUTO_INCREMENT for table `tbl_pets`
+--
+ALTER TABLE `tbl_pets`
+  MODIFY `pet_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT for table `tbl_users`
