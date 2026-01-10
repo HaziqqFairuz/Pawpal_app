@@ -240,64 +240,67 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
-  void loginuser() {
+  Future<void> saveUserSession(User user) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('isLoggedIn', true);
+    prefs.setString('user', jsonEncode(user.toJson()));
+  }
+
+  Future<void> loginuser() async {
     String email = emailController.text.trim();
     String password = passwordController.text.trim();
+
     if (email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text("Please fill in email and password"),
           backgroundColor: Colors.red,
         ),
       );
       return;
     }
-    http
-        .post(
-          Uri.parse('${MyConfig.baseUrl}/pawpal/api/login.php'),
-          body: {'email': email, 'password': password},
-        )
-        .then((response) {
-          if (response.statusCode == 200) {
-            var jsonResponse = response.body;
-            // print(jsonResponse);
-            var resarray = jsonDecode(jsonResponse);
-            if (resarray['status'] == 'success') {
-              //print(resarray['data'][0]);
-              user = User.fromJson(resarray['data'][0]);
 
-              if (!mounted) return;
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text("Login successful"),
-                  backgroundColor: Colors.green,
-                ),
-              );
-              Navigator.pop(context);
-              // Navigate to home page or dashboard
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => MainScreen(user: user)),
-              );
-            } else {
-              if (!mounted) return;
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(resarray['message']),
-                  backgroundColor: Colors.red,
-                ),
-              );
-            }
-            // Handle successful login here
-          } else {
-            if (!mounted) return;
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text("Login failed: ${response.statusCode}"),
-                backgroundColor: Colors.red,
-              ),
-            );
-          }
-        });
+    try {
+      final response = await http.post(
+        Uri.parse('${MyConfig.baseUrl}/pawpal/api/login.php'),
+        body: {'email': email, 'password': password},
+      );
+
+      if (response.statusCode == 200) {
+        var resarray = jsonDecode(response.body);
+
+        if (resarray['status'] == 'success') {
+          user = User.fromJson(resarray['data'][0]);
+
+          // ✅ FIX: await works now
+          await saveUserSession(user);
+
+          if (!mounted) return;
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Login successful"),
+              backgroundColor: Colors.green,
+            ),
+          );
+
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => MainScreen(user: user)),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(resarray['message']),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: $e"), backgroundColor: Colors.red),
+      );
+    }
   }
 }

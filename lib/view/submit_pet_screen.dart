@@ -26,6 +26,10 @@ class _SubmitPetScreenState extends State<SubmitPetScreen> {
 
   List<String> pettype = ['Cat', 'Dog', 'Rabbit', 'Other'];
 
+  List<String> petGender = ['Male', 'Female'];
+
+  List<String> petHealth = ['Healthy', 'Sick'];
+
   List<String> submissioncategory = [
     'Adoption',
     'Donation Request',
@@ -33,10 +37,14 @@ class _SubmitPetScreenState extends State<SubmitPetScreen> {
   ];
 
   TextEditingController petNameController = TextEditingController();
+  TextEditingController petAgeController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
+  TextEditingController postedbyController = TextEditingController(); 
   TextEditingController addressController = TextEditingController();
 
   String selectedpet = 'Cat';
+  String selectedpetGender = 'Male';
+  String selectedpetHealth = 'Healthy';
   String selectedsubmissioncategory = 'Adoption';
 
   late Position mypostion;
@@ -170,6 +178,15 @@ class _SubmitPetScreenState extends State<SubmitPetScreen> {
                   ),
 
                   SizedBox(height: 10),
+                  TextField(
+                    controller: petAgeController,
+                    decoration: InputDecoration(
+                      labelText: 'Pet Age',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+
+                  SizedBox(height: 10),
                   DropdownButtonFormField<String>(
                     decoration: InputDecoration(
                       labelText: 'Select Pet Type',
@@ -187,6 +204,50 @@ class _SubmitPetScreenState extends State<SubmitPetScreen> {
                       setState(() {
                         selectedpet = newValue!;
                         print(selectedpet);
+                      });
+                    },
+                  ),
+
+                  SizedBox(height: 10),
+                  DropdownButtonFormField<String>(
+                    decoration: InputDecoration(
+                      labelText: 'Select Pet Gender',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                    ),
+                    items: petGender.map((String selectserv) {
+                      return DropdownMenuItem<String>(
+                        value: selectserv,
+                        child: Text(selectserv),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        selectedpetGender = newValue!;
+                        print(selectedpetGender);
+                      });
+                    },
+                  ),
+
+                  SizedBox(height: 10),
+                  DropdownButtonFormField<String>(
+                    decoration: InputDecoration(
+                      labelText: 'Select Pet Health Status',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                    ),
+                    items: petHealth.map((String selectserv) {
+                      return DropdownMenuItem<String>(
+                        value: selectserv,
+                        child: Text(selectserv),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        selectedpetHealth = newValue!;
+                        print(selectedpetHealth);
                       });
                     },
                   ),
@@ -220,6 +281,15 @@ class _SubmitPetScreenState extends State<SubmitPetScreen> {
                       border: OutlineInputBorder(),
                     ),
                     maxLines: 3,
+                  ),
+
+                  SizedBox(height: 10),
+                  TextField(
+                    controller: postedbyController,
+                    decoration: InputDecoration(
+                      labelText: 'Posted by',
+                      border: OutlineInputBorder(),
+                    ),
                   ),
 
                   SizedBox(height: 10),
@@ -413,11 +483,44 @@ class _SubmitPetScreenState extends State<SubmitPetScreen> {
       return;
     }
 
+    // Pet Age validation
+    if (petAgeController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Please enter pet age"),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     // Pet Type validation
     if (selectedpet.isEmpty || !pettype.contains(selectedpet)) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("Please select a valid pet type"),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    // Pet Gender validation
+    if (selectedpetGender.isEmpty || !petGender.contains(selectedpetGender)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Please select a valid pet gender"),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    // Pet Health validation
+    if (selectedpetHealth.isEmpty || !petHealth.contains(selectedpetHealth)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Please select a valid pet health status"),
           backgroundColor: Colors.red,
         ),
       );
@@ -460,6 +563,17 @@ class _SubmitPetScreenState extends State<SubmitPetScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("Please enter description"),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    // Posted by validation
+    if (postedbyController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Please enter posted by"),
           backgroundColor: Colors.red,
         ),
       );
@@ -552,8 +666,6 @@ class _SubmitPetScreenState extends State<SubmitPetScreen> {
   }
 
   void submitPetForm() {
-    
-
     List<String> base64Images = [];
 
     if (kIsWeb) {
@@ -567,19 +679,24 @@ class _SubmitPetScreenState extends State<SubmitPetScreen> {
     }
 
     String petname = petNameController.text.trim();
+    String petage = petAgeController.text.trim(); //tambah sini
     String description = descriptionController.text.trim();
+    String postedBy = postedbyController.text.trim();
+
 
     http
         .post(
-          Uri.parse(
-            '${MyConfig.baseUrl}/pawpal/api/submit_pet.php',
-          ), 
+          Uri.parse('${MyConfig.baseUrl}/pawpal/api/submit_pet.php'),
           body: {
             'userid': widget.user?.userId,
             'pet_name': petname,
+            'pet_age': petage, //tambah sini
             'pet_type': selectedpet,
+            'pet_gender': selectedpetGender, //tambah sini
+            'pet_health': selectedpetHealth, //tambah sini
             'category': selectedsubmissioncategory,
             'description': description,
+            'posted_by': postedBy, //tambah sini
             'lat': mypostion.latitude.toString(),
             'lng': mypostion.longitude.toString(),
             'image_list': jsonEncode(base64Images),

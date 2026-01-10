@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:pawpal_app/models/petsubmission.dart';
 import 'package:pawpal_app/models/user.dart';
 import 'package:pawpal_app/myconfig.dart';
+import 'package:pawpal_app/shared/mydrawer.dart';
 import 'package:pawpal_app/view/submit_pet_screen.dart';
 
 class MainScreen extends StatefulWidget {
@@ -195,6 +196,7 @@ class _MainScreenState extends State<MainScreen> {
         foregroundColor: Colors.white,
         child: const Icon(Icons.add),
       ),
+      drawer: MyDrawer(user: widget.user), //Drawer (hameburger menu)
     );
   }
 

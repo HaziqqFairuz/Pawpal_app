@@ -10,9 +10,13 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 
 $userid      = $_POST['userid'];
 $pet_name    = addslashes($_POST['pet_name']);
+$pet_age     = addslashes($_POST['pet_age']);
 $pet_type    = $_POST['pet_type'];
+$pet_gender  = $_POST['pet_gender'];
+$pet_health  = $_POST['pet_health'];
 $category    = $_POST['category'];
 $description = addslashes($_POST['description']);
+$postedBy    = addslashes($_POST['posted_by']);
 $lat         = $_POST['lat'];
 $lng         = $_POST['lng'];
 
@@ -25,8 +29,8 @@ if (!is_array($image_list) || count($image_list) == 0) {
 }
 
 // Insert the pet WITHOUT image_paths first
-$sqlinsert = "INSERT INTO tbl_pets(user_id, pet_name, pet_type, category, description, lat, lng)
-              VALUES ('$userid', '$pet_name', '$pet_type', '$category', '$description', '$lat', '$lng')";
+$sqlinsert = "INSERT INTO tbl_pets(user_id, pet_name, pet_age, pet_type, pet_gender, pet_health, category, description, posted_by, lat, lng)
+              VALUES ('$userid', '$pet_name', '$pet_age', '$pet_type', '$pet_gender', '$pet_health', '$category', '$description', '$postedBy', '$lat', '$lng')";
 
 if ($conn->query($sqlinsert) === TRUE) {
 
