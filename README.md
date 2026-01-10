@@ -1,267 +1,160 @@
-# pawpal_app
+# 🐾 PawPal – Pet Adoption & Donation Mobile Application
 
-# PawPal – Pet Submission Feature (Mini Project)
-
-This README documents only the parts you implemented:
-
-* **lib/models/petsubmission.dart**
-* **lib/view/home_screen.dart**
-* **lib/view/submit_pet_screen.dart**
-* **server/pawpal/api/get_my_pet.php**
-* **server/pawpal/api/submit_pet.php**
-
-It explains setup steps, API usage, and sample JSON to help anyone run or understand this module.
+PawPal is a full-stack mobile application developed using **Flutter**, **PHP**, and **MySQL**. The app enables users to browse pets, submit adoption requests, donate to pets in need, and manage their user profiles. This project was built as a final assignment for **STTGK3013 Mobile Web Programming**.
 
 ---
 
-## Project Overview
+## 📱 Features
 
-This mini‑project is part of the PawPal App, allowing users to:
+### Authentication
+- User Registration
+- User Login
+- Persistent login using **SharedPreferences**
+- Secure logout
 
-* Submit pet information along with an image
-* Fetch and display their submitted pets on the home_screen
+### Public Pet Listing
+- View all available pets
+- Search pets by name
+- Filter pets by type (e.g., Cat, Dog)
+- Clean and responsive UI
 
-The system uses:
+### Pet Details & Adoption
+- View detailed pet information
+- Submit adoption request form
+- Pet status updates from **Available** → **Requested**
+- Form validation with user feedback (Snackbar)
 
-* **Flutter (Frontend)**
-* **PHP (Backend API)**
-* **MySQL (Database)**
-* **File storage for pet images**
+### Donation Module
+- Donate to pets that require donations
+- Donation types:
+  - Food
+  - Medical
+  - Money
+- Money donations integrated with **Billplz payment gateway**
+- Secure payment flow
 
----
+### Donation History
+- View donation history
+- Donations filtered by logged-in user
 
-## 🗂 Folder Structure
-
-```
-pawpal_app/
-│
-├── lib/
-│   ├── models/
-│   │   └── petsubmission.dart
-│   └── view/
-│       ├── homescreen.dart
-│       └── submit_pet_screen.dart
-│
-server/
-└── pawpal/
-    ├── api/
-    │   ├── get_my_pet.php
-    │   └── submit_pet.php
-    └── assets/
-        └── pets/   ← stored images go here
-```
-
----
-
-## ⚙️ Setup Instructions
-
-### ✅ 1. Backend Setup (XAMPP / Hosting)
-
-1. Copy **server/pawpal** folder into your server directory:
-
-   * XAMPP → `htdocs/pawpal/`
-2. Create a **MySQL Database** (example: `pawpal_db`)
-3. Create table (example schema):
-
-```sql
-CREATE TABLE `tbl_pets` (
-  `pet_id` int NOT NULL AUTO_INCREMENT,
-  `user_id` int NOT NULL,
-  `pet_name` varchar(100),
-  `pet_type` varchar(50),
-  `category` varchar(50),
-  `description` text,
-  `lat` varchar(50),
-  `lng` varchar(50),
-  'created_at' Timestamp,
-  PRIMARY KEY (`pet_id`)
-);
-```
-
-4. Ensure `/assets/pets/` folder has **write permission**.
+### User Profile Management
+- View user profile details
+- Edit name, phone number, and profile image
+- Email and User ID are read-only
+- Profile image upload to server
+- Drawer updates dynamically after profile changes
 
 ---
 
-###  2. Flutter Setup
+## Tech Stack
 
-1. Inside Flutter project:
+### Frontend
+- Flutter (Dart)
+- Material UI
+- HTTP package
+- SharedPreferences
 
+### Backend
+- PHP (RESTful APIs)
+- MySQL Database
+- cPanel Hosting Environment
+
+### Other Services
+- Billplz (Payment Gateway)
+- Hosted on cPanel server
+
+---
+
+## ⚙️ Project Setup
+
+### 1️ Clone Repository
+```bash
+git clone https://github.com/HaziqqFairuz/Pawpal_app.git
+cd Pawpal_app
 ```
+
+### 2️ Flutter Setup
+- Ensure Flutter SDK is installed
+- Run the following commands:
+```bash
 flutter pub get
-```
-
-2. API URL :
-
-```
-MyConfig.baseUrl = "http://10.29.19.141:80";
-```
-
-3. Run app:
-
-```
 flutter run
 ```
 
----
+### 3️ Backend Setup (PHP & MySQL)
+- Upload the backend PHP files to your **cPanel hosting** (e.g., `public_html/pawpal`)
+- Create a MySQL database using **cPanel → MySQL Databases**
+- Import the provided SQL file using **phpMyAdmin**
+- Configure database credentials in the PHP configuration files
+- Ensure required PHP extensions (cURL, mysqli) are enabled
 
-##  API Documentation
+- Update API base URL in Flutter (`myconfig.dart`)
 
-### **1. Submit Pet**
-
-**URL: POST /pawpal/api/submit_pet.php**
-
-```
-POST /pawpal/api/submit_pet.php
-```
-This field must be send:
-
-- userid
-- pet_name
-- pet_type
-- category
-- description
-- lat
-- lng
-- image_list (JSON array of Base64 images)
-
-### Request (JSON)
-
-```json
-{
-    "userid": "3",
-    "pet_name": "Kitty",
-    "pet_type": "Cat",
-    "category": "Lost",
-    "description": "White cat with blue eyes",
-    "lat": "6.453200",
-    "lng": "100.505000",
-    "image_list": [
-    "BASE64_IMAGE_STRING_1",
-    "BASE64_IMAGE_STRING_2"
-]
-}
-```
-
-### Success Response
-
-```json
-{
-  "status": "success",
-  "message": "Pet submitted successfully",
-  "data": {
-    "pet_id": "$last_id",
-    "filename": "count($image_list)"
-  }
-}
-```
-
-### Error Response
-
-```json
-{
-  "status": "failed",
-  "message": "No images received"
-}
+```dart
+const String server = "http://YOUR_SERVER_IP/pawpal";
 ```
 
 ---
 
-### **2. Get My Pets**
+## 🔗 API Usage (Overview)
 
-**URL:**
+The Flutter app communicates with the backend hosted on a **cPanel server** using HTTP POST requests and JSON responses.
+
+### Example APIs Used
+- **Login API** – Authenticate user
+- **Register API** – Create new user
+- **Get Pets API** – Fetch all pets
+- **Search & Filter Pets API**
+- **Adoption Request API** – Submit adoption form
+- **Donation API** – Store donation data
+- **Donation History API** – Retrieve user donations
+- **Profile Update API** – Update user details & image
+
+### Payment Gateway
+- **Billplz API** is used for handling online payments
+- Payment flow redirects users to Billplz checkout page
+- Successful payments are verified before storing donation records
+
+> All APIs return JSON responses and are handled using `dart:convert`.
+
+---
+
+## 📂 Project Structure (Flutter)
 
 ```
-GET /pawpal/api/get_my_pet.php?userid=3
-```
-
-### Success Response
-
-```json
-{
-    "status": "success",
-    "message": "Success",
-    "data": [
-{
-    "pet_id": "12",
-    "user_id": "3",
-    "pet_name": "Kitty",
-    "pet_type": "Cat",
-    "category": "Lost",
-    "description": "White cat with blue eyes",
-    "lat": "6.453200",
-    "lng": "100.505000"
-}
-]
-}
-```
-
-### No Pets
-
-```json
-{
-  "status": "failed",
-  "message": "Invalid request",
-  "data": null
-}
+lib/
+├── models/
+│   ├── user.dart
+│   ├── petsubmission.dart
+│   └── donation.dart
+├── view/
+│   ├── home_screen.dart
+│   ├── pets_screen.dart
+│   ├── pet_details_screen.dart
+│   ├── pet_donation_screen.dart
+│   └── profile_screen.dart
+├── shared/
+│   ├── mydrawer.dart
+│   └── animated_route.dart
+├── myconfig.dart
+└── main.dart
 ```
 
 ---
 
-## **Pet Image Naming Structure**
+## Demo & Source Code
 
-backend saves image files as:
+- **GitHub Repository**  
+  https://github.com/HaziqqFairuz/Pawpal_app.git
 
-```
-pet_<petid>_<index>.png
-```
-
-Example:
-
-```
-pet_12_0.png
-```
-
-Place inside:
-
-```
-server/pawpal/assets/pets/
-```
-
-### Flutter must load it using:
-
-```
-${MyConfig.baseUrl}/pawpal/assets/pets/pet_${pet.petId}_0.png
-```
+- **YouTube Demo Video**  
+  https://youtu.be/OtveaK6Esic
 
 ---
 
-## Flutter Models & Screens
+## Author
 
-### 🔹 `petsubmission.dart`
-
-Represents a pet object returned from API.
-
-### `home_screen.dart`
-
-* Loads pet list using GET API
-* Displays pet card with image
-* Shows fallback if image fails
-
-### `submit_pet_screen.dart`
-
-* Form input for pet info
-* Encodes image as Base64
-* Sends JSON POST request to API
-
----
-
-## Testing the API
-
-### Using Postman / Thunder Client:
-
-1. Test **submit_pet.php** using POST + JSON
-2. Test **get_my_pet.php** using GET
-3. Check if images appear in `/assets/pets/`
-
----
+**Muhammad Haziq bin Mohamad Fairuz**  
+Matric No: 303559  
+Course: STTGK3013 Mobile Web Programming
 
